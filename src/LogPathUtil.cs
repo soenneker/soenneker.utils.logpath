@@ -16,7 +16,8 @@ public static class LogPathUtil
     /// <summary>
     /// Gets the log file path based on the environment.
     /// </summary>
-    public static async ValueTask<string> Get(string logFileName, CancellationToken cancellationToken = default)
+    /// <remarks>Returns a task because this can be used in GetAwaiter() scenarios.</remarks>
+    public static async Task<string> Get(string logFileName, CancellationToken cancellationToken = default)
     {
         // 1️⃣  Caller-supplied override
         string? overrideDir = Environment.GetEnvironmentVariable("LOG_PATH");
