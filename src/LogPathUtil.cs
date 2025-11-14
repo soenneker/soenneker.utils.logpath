@@ -25,18 +25,40 @@ public static class LogPathUtil
         if (overrideDir.HasContent())
             return Path.Combine(overrideDir, logFileName);
 
-        // 2️⃣  Azure App Service (Win & Linux) – %HOME% is always set
+        // 2️⃣  Azure App Service (Win & Linux: code + custom containers)
+        //     Logs are under HOME/LogFiles on Windows (D:\home\LogFiles)
+        //     and under /home/LogFiles on Linux (even if HOME=/root in the container).
         if (RuntimeUtil.IsAzureAppService)
         {
             string? home = Environment.GetEnvironmentVariable("HOME");
+            string baseDir;
 
-            if (home.HasContent())
+            if (RuntimeUtil.IsWindows())
             {
-                string dir = Path.Combine(home, "LogFiles");
-
-                if (TryEnsureWritable(dir))
-                    return Path.Combine(dir, logFileName);
+                // Classic Windows App Service: HOME is usually "D:\home"
+                // but fall back to that if HOME is missing for some reason.
+                if (home.HasContent())
+                    baseDir = home;
+                else
+                    baseDir = @"D:\home";
             }
+            else
+            {
+                // Linux App Service / Web App for Containers:
+                // Azure mounts the persistent disk at /home.
+                // HOME inside the container can be /root, so prefer /home.
+                if (home.HasContent() && home.StartsWith("/home", StringComparison.OrdinalIgnoreCase))
+                    baseDir = home;
+                else
+                    baseDir = "/home";
+            }
+
+            string dir = Path.Combine(baseDir, "LogFiles");
+
+            if (TryEnsureWritable(dir))
+                return Path.Combine(dir, logFileName);
+
+            // If for some reason it's not writable, we fall through to other strategies.
         }
 
         // 3️⃣  GitHub Actions (runner has guaranteed write access)
@@ -46,16 +68,18 @@ public static class LogPathUtil
 
             if (ghWorkspace.HasContent())
             {
-                string dir = Path.Combine(ghWorkspace, "logs");
+                string dir = Path.Combine(ghWorkspace!, "logs");
 
                 if (TryEnsureWritable(dir))
                     return Path.Combine(dir, logFileName);
             }
         }
 
-        // Generic container (not WAFC)
-        if (await RuntimeUtil.IsContainer(cancellationToken).NoSync())
+        // 4️⃣  Generic container (non-App Service, or if all above failed)
+        if (await RuntimeUtil.IsContainer(cancellationToken)
+                             .NoSync())
         {
+            // Standard Linux container log location (you can tweak if you want a different convention)
             const string localDir = "/var/log/app";
 
             if (TryEnsureWritable(localDir))
