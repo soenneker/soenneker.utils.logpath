@@ -27,7 +27,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\src\Soenneker.Utils.LogPath.csproj" />
+        <ProjectReference Include="..\..\src\Soenneker.Utils.LogPath\Soenneker.Utils.LogPath.csproj" />
     </ItemGroup>
 
     <ItemGroup>
