@@ -1,16 +1,15 @@
-﻿using Soenneker.Tests.FixturedUnit;
-using Xunit;
+using Soenneker.Tests.HostedUnit;
 
 namespace Soenneker.Utils.LogPath.Tests;
 
-[Collection("Collection")]
-public sealed class LogPathUtilTests : FixturedUnitTest
+[ClassDataSource<Host>(Shared = SharedType.PerTestSession)]
+public sealed class LogPathUtilTests : HostedUnitTest
 {
-    public LogPathUtilTests(Fixture fixture, ITestOutputHelper output) : base(fixture, output)
+    public LogPathUtilTests(Host host) : base(host)
     {
     }
 
-    [Fact]
+    [Test]
     public void Default()
     {
 
