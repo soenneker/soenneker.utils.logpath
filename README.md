@@ -4,10 +4,22 @@
 [![](https://img.shields.io/github/actions/workflow/status/soenneker/soenneker.utils.logpath/codeql.yml?label=CodeQL&style=for-the-badge)](https://github.com/soenneker/soenneker.utils.logpath/actions/workflows/codeql.yml)
 
 # ![](https://user-images.githubusercontent.com/4441470/224455560-91ed3ee7-f510-4041-a8d2-3fc093025112.png) Soenneker.Utils.LogPath
-### A utility library for determining the log path across all environments
+A utility library for determining the log path across all environments.
 
 ## Installation
 
-```
+```bash
 dotnet add package Soenneker.Utils.LogPath
 ```
+
+## Quick start
+
+```csharp
+using Soenneker.Utils.LogPath;
+```
+
+Call the static `LogPathUtil` methods directly; no dependency-injection registration is required.
+
+## Common operations
+
+- `Get()` - Gets the log file path based on the environment.
