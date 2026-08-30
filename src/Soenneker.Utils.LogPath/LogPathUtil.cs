@@ -55,7 +55,7 @@ public static class LogPathUtil
 
             string dir = Path.Combine(baseDir, "LogFiles");
 
-            if (TryEnsureWritable(dir))
+            if (TryEnsureDirectory(dir))
                 return Path.Combine(dir, logFileName);
 
             // If for some reason it's not writable, we fall through to other strategies.
@@ -70,7 +70,7 @@ public static class LogPathUtil
             {
                 string dir = Path.Combine(ghWorkspace!, "logs");
 
-                if (TryEnsureWritable(dir))
+                if (TryEnsureDirectory(dir))
                     return Path.Combine(dir, logFileName);
             }
         }
@@ -82,18 +82,18 @@ public static class LogPathUtil
             // Standard Linux container log location (you can tweak if you want a different convention)
             const string localDir = "/var/log/app";
 
-            if (TryEnsureWritable(localDir))
+            if (TryEnsureDirectory(localDir))
                 return Path.Combine(localDir, logFileName);
         }
 
         // 5️⃣  Local dev fallback – <project root>/logs
         string local = Path.Combine(AppContext.BaseDirectory, "logs");
-        Directory.CreateDirectory(local); // always possible locally
+        Directory.CreateDirectory(local);
 
         return Path.Combine(local, logFileName);
     }
 
-    private static bool TryEnsureWritable(string dir)
+    private static bool TryEnsureDirectory(string dir)
     {
         try
         {
@@ -101,6 +101,10 @@ public static class LogPathUtil
             return true;
         }
         catch (UnauthorizedAccessException)
+        {
+            return false;
+        }
+        catch (IOException)
         {
             return false;
         }
