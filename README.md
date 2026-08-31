@@ -4,7 +4,7 @@
 [![](https://img.shields.io/github/actions/workflow/status/soenneker/soenneker.utils.logpath/codeql.yml?label=CodeQL&style=for-the-badge)](https://github.com/soenneker/soenneker.utils.logpath/actions/workflows/codeql.yml)
 
 # ![](https://user-images.githubusercontent.com/4441470/224455560-91ed3ee7-f510-4041-a8d2-3fc093025112.png) Soenneker.Utils.LogPath
-A utility library for determining the log path across all environments.
+Chooses a writable log-file path for explicit, Azure App Service, GitHub Actions, container, and local application environments.
 
 ## Installation
 
